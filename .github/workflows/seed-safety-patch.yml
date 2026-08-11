@@ -31,6 +31,10 @@ jobs:
           start = text.index("workflow_path = Path('.github/workflows/ci.yml')")
           end = text.index("env_path = Path('.env.example')")
           text = text[:start] + text[end:]
+          text = text.replace(
+              "if not path.is_file() or '.git' in path.parts:\n",
+              "if not path.is_file() or '.git' in path.parts or path == Path('.github/workflows/ci.yml'):\n",
+          )
           text = text.replace("Path('.github/workflows/seed-safety-patch.yml').unlink()\n", '')
           path.write_text(text)
           PY
