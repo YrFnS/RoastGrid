@@ -1,4 +1,5 @@
 type DemoSeedEnvironment = {
+  [key: string]: string | undefined
   ALLOW_DEMO_SEED?: string
   DEMO_PASSWORD?: string
 }
