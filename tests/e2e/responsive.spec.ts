@@ -1,6 +1,7 @@
+import { getRequiredDemoPassword } from './support/demoCredentials.ts'
 import { expect, test, type Page } from '@playwright/test'
 
-const password = process.env.DEMO_PASSWORD ?? 'RoastGridDemo2026!'
+const password = getRequiredDemoPassword()
 
 async function signIn(page: Page) {
   await page.goto('/en/sign-in')

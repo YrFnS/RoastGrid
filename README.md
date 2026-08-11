@@ -46,11 +46,13 @@ RoastGrid is a bilingual coffee-shop and gaming-center operations system built w
    npm run db:migrate
    ```
 
-5. Optionally seed the local database with the demo roles and operational data:
+5. Seed only an isolated demo database. Set `ALLOW_DEMO_SEED=true` and provide a unique `DEMO_PASSWORD` of at least 16 characters, then run:
 
    ```bash
    npm run seed
    ```
+
+   The command refuses to run without both values and may synchronize the demo users in an existing database.
 
 6. Start the app:
 
@@ -76,7 +78,7 @@ npm run build
 npm run test:e2e
 ```
 
-`test:db`, `seed`, and the mutating browser scenarios must run against an isolated database, never the production Neon database. GitHub Actions provisions disposable PostgreSQL services for the full verification and Chromium suites.
+`test:db`, `seed`, and the mutating browser scenarios must run against an isolated database, never the production Neon database. The seed command additionally requires `ALLOW_DEMO_SEED=true` and a supplied `DEMO_PASSWORD`. GitHub Actions provisions disposable PostgreSQL services for the full verification and Chromium suites.
 
 ## Environment variables
 
@@ -87,6 +89,8 @@ npm run test:e2e
 | `BETTER_AUTH_URL` | Yes | Canonical public origin users open in the browser. |
 | `BETTER_AUTH_TRUSTED_ORIGINS` | No | Comma-separated additional trusted aliases. |
 | `DEMO_MODE` | No | Exposes demo-only behavior when explicitly set to `true`; production must remain `false`. |
+| `ALLOW_DEMO_SEED` | Seed only | Must be exactly `true` before the destructive demo seed can run. |
+| `DEMO_PASSWORD` | Seed/E2E only | Unique demo-user password; at least 16 characters and never a shared production credential. |
 
 See `.env.example` for local defaults.
 

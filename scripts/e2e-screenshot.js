@@ -2,8 +2,12 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { chromium } = require('playwright');
 
-const BASE = 'http://213.199.56.120:3000';
+const BASE = (process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000').replace(/\/$/, '');
 const OUT = '/tmp';
+const DEMO_PASSWORD = process.env.DEMO_PASSWORD?.trim();
+if (!DEMO_PASSWORD) {
+  throw new Error('DEMO_PASSWORD is required for the authenticated screenshot flow.');
+}
 
 async function screenshot(url, file) {
   const browser = await chromium.launch({
@@ -33,7 +37,7 @@ async function main() {
   const page = await browser.newPage();
   await page.goto(`${BASE}/ar/sign-in`, { timeout: 15000 });
   await page.fill("input[type='email'], input[name='email']", 'admin@roastgrid.app');
-  await page.fill("input[type='password']", 'RoastGridDemo2026!');
+  await page.fill("input[type='password']", DEMO_PASSWORD);
   await page.click("button[type='submit']");
   await page.waitForURL('**/dashboard**', { timeout: 10000 });
   await page.screenshot({ path: `${OUT}/roastgrid-dashboard.png`, fullPage: true });
