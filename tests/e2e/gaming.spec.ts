@@ -1,3 +1,4 @@
+import { getRequiredDemoPassword } from './support/demoCredentials.ts'
 import { expect, test } from '@playwright/test'
 
 test.skip(process.env.RUN_MUTATING_E2E !== '1', 'requires an isolated seeded database branch')
@@ -5,7 +6,7 @@ test.skip(process.env.RUN_MUTATING_E2E !== '1', 'requires an isolated seeded dat
 test('café order follows a gaming timer across a station transfer', async ({ page }) => {
   await page.goto('/en/sign-in')
   await page.getByLabel('Email').fill('cashier@roastgrid.app')
-  await page.getByLabel('Password').fill(process.env.DEMO_PASSWORD ?? 'RoastGridDemo2026!')
+  await page.getByLabel('Password').fill(getRequiredDemoPassword())
   await page.getByRole('button', { name: 'Sign In' }).click()
   await page.waitForURL(/\/en\/dashboard/)
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """E2E screenshot taker for RoastGrid using Playwright + Chromium"""
 import asyncio
+import os
 import sys
 from pathlib import Path
 
@@ -23,7 +24,11 @@ async def take_screenshot(url: str, path: str, wait_for: str = None):
             await browser.close()
 
 async def main():
-    base = "http://213.199.56.120:3000"
+    password = os.environ.get("DEMO_PASSWORD", "").strip()
+    if not password:
+        raise RuntimeError("DEMO_PASSWORD is required for the authenticated screenshot flow.")
+
+    base = os.environ.get("PLAYWRIGHT_BASE_URL", "http://localhost:3000").rstrip("/")
     screens = [
         (f"{base}/ar", "/tmp/roastgrid-landing.png", "[data-testid='sign-in-form'], form, [type='email']"),
         (f"{base}/ar/sign-in", "/tmp/roastgrid-signin.png", "form"),
@@ -41,7 +46,7 @@ async def main():
         page = await browser.new_page()
         await page.goto(f"{base}/ar/sign-in", timeout=15000)
         await page.fill("input[type='email'], input[name='email']", "admin@roastgrid.app")
-        await page.fill("input[type='password']", "RoastGridDemo2026!")
+        await page.fill("input[type='password']", password)
         await page.click("button[type='submit']")
         await page.wait_for_url("**/dashboard**", timeout=10000)
         await page.screenshot(path="/tmp/roastgrid-dashboard.png", full_page=True)

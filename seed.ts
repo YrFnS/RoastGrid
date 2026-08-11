@@ -6,6 +6,7 @@ import { drizzle } from 'drizzle-orm/node-postgres'
 import { eq, inArray } from 'drizzle-orm'
 import { Pool } from 'pg'
 import * as schema from './src/lib/schema.ts'
+import { getRequiredDemoSeedPassword } from './src/lib/demoSeed.ts'
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL })
 const db = drizzle(pool, { schema })
@@ -49,8 +50,7 @@ const permissionKeys = new Set(permissionRows.map(permission => permission.key))
 const cashierPermissionKeys = new Set(['pos.view', 'pos.checkout', 'pos.void_item', 'pos.void_order', 'pos.open_shift', 'pos.close_shift', 'shifts.view', 'shifts.open', 'shifts.close', 'resources.view'])
 const accountantModules = new Set(['accounting', 'expenses', 'employees', 'payroll', 'reports'])
 
-async function syncBrandIdentity() {
-  const password = await hashPassword('RoastGridDemo2026!')
+async function syncBrandIdentity(password: string) {
   const demoUsers = [
     { id: ids.admin, email: 'admin@roastgrid.app', isActive: true, isDisabled: false },
     { id: ids.manager, email: 'manager@roastgrid.app', isActive: true, isDisabled: false },
@@ -126,15 +126,15 @@ async function syncPermissionMatrix() {
 }
 
 async function seed() {
+  const password = await hashPassword(getRequiredDemoSeedPassword())
   const existing = await db.select({ id: schema.users.id }).from(schema.users).limit(1)
   if (existing.length) {
-    await syncBrandIdentity()
+    await syncBrandIdentity(password)
     await syncPermissionMatrix()
     console.log('Demo data already exists; RoastGrid identity and permission matrix synchronized.')
     return
   }
 
-  const password = await hashPassword('RoastGridDemo2026!')
   const now = new Date()
   const yesterday = new Date(now.getTime() - 86_400_000)
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)

@@ -37,7 +37,7 @@ Legend: 🧑 **You** — owner action · 🤖 **Agent** — code/CLI action · �
   **You'll know it worked when:** Drizzle reports the committed migration history applied successfully.
 
 - [x] 🤖 **Seed meaningful demo data** — 5 minutes.
-  > Run `npm run seed` only when the target is an isolated demo database. It populates new databases or synchronizes the RoastGrid identity, demo credentials, permissions, and settings in an existing demo database.
+  > Run `npm run seed` only when the target is an isolated demo database. First set `ALLOW_DEMO_SEED=true` and provide a unique `DEMO_PASSWORD` of at least 16 characters. The command refuses to run otherwise because it populates new databases or synchronizes demo identities, credentials, permissions, and settings in an existing database.
   **You'll know it worked when:** every demo-domain table has at least one row and all foreign keys resolve.
 
 ## Phase 4 — Deploy the app

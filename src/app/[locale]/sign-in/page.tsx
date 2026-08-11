@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation'
 import { getSession } from '@/lib/auth'
-import { env } from '@/lib/env'
 import SignInForm from './SignInForm'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { Coffee, Gamepad2, Sparkles } from 'lucide-react'
@@ -54,11 +53,6 @@ export default async function SignInPage({
           <div className="rounded-3xl border border-outline-variant/60 bg-white p-6 shadow-[0_24px_70px_rgba(24,34,48,.12)] sm:p-8">
             <SignInForm locale={locale} />
           </div>
-          {env.DEMO_MODE && (
-            <p className="mt-5 text-center text-xs text-on-surface-variant">
-              {t('demo')}: admin@roastgrid.app · RoastGridDemo2026!
-            </p>
-          )}
         </div>
       </section>
     </main>

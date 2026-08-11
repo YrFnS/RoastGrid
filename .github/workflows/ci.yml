@@ -90,7 +90,8 @@ jobs:
       BETTER_AUTH_URL: http://localhost:3000
       PLAYWRIGHT_BASE_URL: http://localhost:3000
       DEMO_MODE: "false"
-      DEMO_PASSWORD: RoastGridDemo2026!
+      ALLOW_DEMO_SEED: "true"
+      DEMO_PASSWORD: "ci-browser-only-password-9Q7m-2026"
       RUN_MUTATING_E2E: "1"
 
     steps:
