@@ -38,14 +38,54 @@ for (const role of [
   })
 }
 
-test('cashier cannot open admin and does not see finance/admin navigation', async ({ page }) => {
+test('manager cannot open admin workflows', async ({ page }) => {
+  await signIn(page, 'manager@roastgrid.app')
+  await expect(page.getByRole('link', { name: 'Admin', exact: true })).toHaveCount(0)
+  await page.goto('/en/admin/users')
+  await expect(page).toHaveURL(/\/en\/dashboard$/)
+})
+
+test('cashier cannot open admin, finance, or procurement workflows', async ({ page }) => {
   await signIn(page, 'cashier@roastgrid.app')
-  await expect(page.getByRole('link', { name: 'Admin' })).toHaveCount(0)
-  await expect(page.getByRole('link', { name: 'Accounting' })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: 'Admin', exact: true })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: 'Accounting', exact: true })).toHaveCount(0)
   await page.goto('/en/admin/users')
   await expect(page).toHaveURL(/\/en\/dashboard$/)
   await page.goto('/en/procurement/purchases')
   await expect(page).toHaveURL(/\/en\/dashboard$/)
+})
+
+test('accountant cannot open POS or admin workflows', async ({ page }) => {
+  await signIn(page, 'accountant@roastgrid.app')
+  await expect(page.getByRole('link', { name: 'POS', exact: true })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: 'Admin', exact: true })).toHaveCount(0)
+  await page.goto('/en/pos')
+  await expect(page).toHaveURL(/\/en\/dashboard$/)
+  await page.goto('/en/admin/users')
+  await expect(page).toHaveURL(/\/en\/dashboard$/)
+})
+
+test('disabled user cannot create or retain a session', async ({ page }) => {
+  await page.goto('/en/sign-in')
+  await page.getByLabel('Email').fill('disabled@roastgrid.app')
+  await page.getByLabel('Password').fill(password)
+
+  const accountUnavailable = page.getByText('This account is disabled or unavailable.')
+  await page.getByRole('button', { name: 'Sign In' }).click()
+
+  try {
+    await expect(accountUnavailable).toBeVisible({ timeout: 12_000 })
+  } catch (error) {
+    const rateLimited = await page.getByText(/Too many requests/i).isVisible()
+    if (!rateLimited) throw error
+    await page.waitForTimeout(11_000)
+    await page.getByRole('button', { name: 'Sign In' }).click()
+    await expect(accountUnavailable).toBeVisible()
+  }
+
+  await expect(page).toHaveURL(/\/en\/sign-in$/)
+  await page.goto('/en/dashboard')
+  await expect(page).toHaveURL(/\/en\/sign-in$/)
 })
 
 test('Arabic mode renders an RTL protected document', async ({ page }) => {
