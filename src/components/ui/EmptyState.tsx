@@ -1,11 +1,18 @@
 "use client"
 
-import type { LucideIcon } from 'lucide-react'
+import { FileText, type LucideIcon } from 'lucide-react'
 import { Button } from './button'
 import { cn } from '@/lib/utils'
 
+export type EmptyStateIconName = 'file-text'
+
+const namedIcons: Record<EmptyStateIconName, LucideIcon> = {
+  'file-text': FileText,
+}
+
 interface EmptyStateProps {
   icon?: LucideIcon
+  iconName?: EmptyStateIconName
   title: string
   description?: string
   action?: { label: string; onClick: () => void }
@@ -13,12 +20,15 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({
-  icon: Icon,
+  icon,
+  iconName,
   title,
   description,
   action,
   className,
 }: EmptyStateProps) {
+  const Icon = iconName ? namedIcons[iconName] : icon
+
   return (
     <div
       className={cn(

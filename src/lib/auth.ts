@@ -1,9 +1,12 @@
 import { betterAuth } from 'better-auth'
+import { APIError } from 'better-auth/api'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { eq } from 'drizzle-orm'
+import { ACCOUNT_UNAVAILABLE_ERROR } from './authConstants'
 import { db } from './db'
 import * as schema from './schema'
 import { env } from './env'
+import { buildTrustedAuthOrigins } from './runtimeConfig'
 
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
@@ -17,12 +20,31 @@ export const auth = betterAuth({
     },
     debugLogs: process.env.NODE_ENV !== 'production',
   }),
+  databaseHooks: {
+    session: {
+      create: {
+        before: async (session) => {
+          const user = await db.query.users.findFirst({
+            where: eq(schema.users.id, session.userId),
+          })
+
+          if (!user || user.isDisabled || !user.isActive) {
+            throw new APIError('BAD_REQUEST', {
+              message: ACCOUNT_UNAVAILABLE_ERROR,
+            })
+          }
+
+          return { data: session }
+        },
+      },
+    },
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
   },
   secret: env.BETTER_AUTH_SECRET,
-  trustedOrigins: [env.BETTER_AUTH_URL],
+  trustedOrigins: buildTrustedAuthOrigins(env.BETTER_AUTH_URL),
   session: {
     expiresIn: 60 * 60 * 24 * 7,
     updateAge: 60 * 60 * 24,

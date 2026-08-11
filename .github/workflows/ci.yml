@@ -91,6 +91,7 @@ jobs:
       PLAYWRIGHT_BASE_URL: http://localhost:3000
       DEMO_MODE: "false"
       DEMO_PASSWORD: RoastGridDemo2026!
+      RUN_MUTATING_E2E: "1"
 
     steps:
       - name: Checkout
