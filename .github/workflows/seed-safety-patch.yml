@@ -20,6 +20,21 @@ jobs:
         with:
           ref: agent/seed-safety-hardening
 
+      - name: Keep workflow edits for the repository connector
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          path = Path('scripts/apply-seed-safety-hardening.py')
+          text = path.read_text()
+          start = text.index("workflow_path = Path('.github/workflows/ci.yml')")
+          end = text.index("env_path = Path('.env.example')")
+          text = text[:start] + text[end:]
+          text = text.replace("Path('.github/workflows/seed-safety-patch.yml').unlink()\n", '')
+          path.write_text(text)
+          PY
+
       - name: Apply guarded seed and credential cleanup
         run: python scripts/apply-seed-safety-hardening.py
 
