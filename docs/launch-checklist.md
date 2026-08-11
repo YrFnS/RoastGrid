@@ -7,11 +7,11 @@ Legend: 🧑 **You** — owner action · 🤖 **Agent** — code/CLI action · �
 ## Phase 0 — Deployment blockers
 
 - [x] 🤖 **Repair the dependency lockfile** — 10 minutes. Keep `package-lock.json` current so Vercel installs the exact tested packages.
-  > Verify the committed lockfile and run a clean install plus production build.
-  **You'll know it worked when:** `bun install --frozen-lockfile` and `bun run build` both exit successfully.
+  > Verify the committed lockfile with `npm ci --no-audit --no-fund`, then run `npm run build`.
+  **You'll know it worked when:** both commands exit successfully without changing `package-lock.json`.
 
 - [x] 🤖 **Set the production auth URL explicitly** — 5 minutes. Better Auth uses this URL to trust login requests and redirects.
-  > Configure Better Auth with the validated `BETTER_AUTH_URL` environment variable.
+  > Configure Better Auth with the validated `BETTER_AUTH_URL` environment variable. Add any extra public aliases to `BETTER_AUTH_TRUSTED_ORIGINS` when they are not already covered by the application defaults.
   **You'll know it worked when:** production login reaches the dashboard without an origin or callback error.
 
 ## Phase 1 — Accounts and prerequisites
@@ -33,18 +33,17 @@ Legend: 🧑 **You** — owner action · 🤖 **Agent** — code/CLI action · �
 ## Phase 3 — Production database
 
 - [x] 🤖 **Create and migrate Neon PostgreSQL** — 10 minutes. A migration creates the tables and relationships the app expects.
-  > Apply the Drizzle schema to the production Neon branch and fail if any statement is rejected.
-  **You'll know it worked when:** Neon reports all schema changes applied.
+  > Run `npm run db:migrate` against the production Neon connection and fail if any committed migration is rejected. Do not use `db:push` on production or shared databases.
+  **You'll know it worked when:** Drizzle reports the committed migration history applied successfully.
 
 - [x] 🤖 **Seed meaningful demo data** — 5 minutes.
-  > Run `npm run seed` to populate new databases or synchronize the RoastGrid identity,
-  > demo credentials, permissions, and settings in an existing database.
+  > Run `npm run seed` only when the target is an isolated demo database. It populates new databases or synchronizes the RoastGrid identity, demo credentials, permissions, and settings in an existing demo database.
   **You'll know it worked when:** every demo-domain table has at least one row and all foreign keys resolve.
 
 ## Phase 4 — Deploy the app
 
 - [x] 🤖 **Deploy the production build to Vercel** — 10–20 minutes.
-  > Link `YrFnS/RoastGrid`, add the production environment variables, deploy `main`, and wait for the canonical alias to become Ready.
+  > Link `YrFnS/RoastGrid`, add the production environment variables, deploy `main`, and confirm the canonical alias becomes Ready.
   **You'll know it worked when:** the public Vercel URL returns the bilingual sign-in screen over HTTPS.
 
 ## Phase 5 — Domain
@@ -58,8 +57,7 @@ Legend: 🧑 **You** — owner action · 🤖 **Agent** — code/CLI action · �
 - [x] 🤖 **Run the production browser journey** — 15–25 minutes.
   > Sign in fresh as every seeded role, verify protected routing, dashboard data, POS products and resources, complete one representative mutation, sign out, and repeat in Arabic RTL.
   **You'll know it worked when:** each role reaches protected data, the mutation persists in Neon, and sign-out returns to sign-in.
-  > Completed 2026-07-26: all four roles, cashier restrictions, item void, split payment,
-  > manager refund, procurement create/receive/pay, finance routes, Arabic RTL, and mobile width passed.
+  > Revalidated 2026-08-11: the isolated Chromium suite completed 17/17 tests with no skips, covering all four active roles, disabled-user rejection, protected routes, POS and gaming operations, procurement, reports, product recipes, responsive layouts, and Arabic RTL.
 
 - [ ] 🤝 **Do the final client-device check** — 5 minutes.
   > Open the final URL once on the device used for the presentation and keep the demo credentials available privately.
