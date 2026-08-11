@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation'
-import { FileText } from 'lucide-react'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { getSession } from '@/lib/auth'
 import { hasPermission } from '@/features/admin/_actions/adminActions'
@@ -122,7 +121,7 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
                 </div>
               ))}
             </div>
-          ) : <EmptyState icon={FileText} title={t('noData')} />}
+          ) : <EmptyState iconName="file-text" title={t('noData')} />}
         </section>
 
         <section className="rounded-2xl bg-surface-container-low p-5">
@@ -145,7 +144,7 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
                 </div>
               ))}
             </div>
-          ) : <EmptyState icon={FileText} title={t('noData')} />}
+          ) : <EmptyState iconName="file-text" title={t('noData')} />}
         </section>
       </div>
 
@@ -195,7 +194,7 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
               ))}
             </div>
           </>
-        ) : <EmptyState icon={FileText} title={t('noData')} />}
+        ) : <EmptyState iconName="file-text" title={t('noData')} />}
       </section>
 
       <section className="rounded-2xl bg-surface-container-low p-4 sm:p-5">
@@ -214,7 +213,7 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
               </article>
             ))}
           </div>
-        ) : <EmptyState icon={FileText} title={t('noAudit')} />}
+        ) : <EmptyState iconName="file-text" title={t('noAudit')} />}
       </section>
     </div>
   )
